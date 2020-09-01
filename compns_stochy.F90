@@ -63,6 +63,9 @@ module compns_stochy_mod
       shum_sigefold,spptint,shumint,skebint,skeb_npass,use_zmtnblck,new_lscale
       namelist /nam_sfcperts/lndp_type,lndp_var_list, lndp_prt_list, iseed_lndp, & 
       lndp_tau,lndp_lscale 
+!     For SPP physics parameterization perterbations
+      namelist /nam_spperts/spp_type,spp_var_list, spp_prt_list, iseed_spp, & 
+      spp_tau,spp_lscale,spp_sigtop1, spp_sigtop2
 
       rerth  =6.3712e+6      ! radius of earth (m)
       tol=0.01  ! tolerance for calculations
@@ -77,8 +80,11 @@ module compns_stochy_mod
       skeb             = -999.  ! stochastic KE backscatter amplitude
       lndp_var_list  = 'XXX'
       lndp_prt_list  = -999.
+      spp_var_list  = 'XXX'
+      spp_prt_list  = -999.
 ! logicals
       do_sppt = .false.
+      do_spp  = .false.
       use_zmtnblck = .false.
       new_lscale = .false.
       do_shum = .false.
@@ -123,6 +129,8 @@ module compns_stochy_mod
       skeb_sigtop1 = 0.1
       skeb_sigtop2 = 0.025
       shum_sigefold = 0.2
+      spp_sigtop1 = 0.1
+      spp_sigtop2 = 0.025
 ! reduce amplitude of sppt near surface (lowest 2 levels)
       sppt_sfclimit = .false.
 ! gaussian or power law variance spectrum for skeb (0: gaussian, 1:
@@ -132,6 +140,11 @@ module compns_stochy_mod
       sppt_logit        = .false. ! logit transform for sppt to bounded interval [-1,+1]
       fhstoch           = -999.0  ! forecast interval (in hours) to dump random patterns
       stochini          = .false. ! true= read in pattern, false=initialize from seed
+
+! For SPP perturbations
+      spp_lscale  = -999.       ! length scales
+      spp_tau     = -999.       ! time scales
+      iseed_spp   = 0           ! random seeds (if 0 use system clock)
 
 #ifdef INTERNAL_FILE_NML
       read(input_nml_file, nml=nam_stochy)
@@ -147,10 +160,19 @@ module compns_stochy_mod
       open (unit=nlunit, file=fn_nml, READONLY, status='OLD', iostat=ios)
       read(nlunit,nam_sfcperts)
 #endif
+#ifdef INTERNAL_FILE_NML
+      read(input_nml_file, nml=nam_spperts)
+#else
+      rewind (nlunit)
+      open (unit=nlunit, file=fn_nml, READONLY, status='OLD', iostat=ios)
+      read(nlunit,nam_spperts)
+#endif
 
       if (me == 0) then
       print *,' in compns_stochy'
       print*,'skeb=',skeb
+      print*,'spp_lscale=',spp_lscale
+      print*,'spp_tau=',spp_tau
       endif
 
 ! PJP stochastic physics additions
@@ -310,6 +332,45 @@ module compns_stochy_mod
          iret = 10 
          return 
      end select 
+
+! 
+! SPP perts  - parse nml input
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     ! count requested pert variables
+     n_var_spp= 0
+     do k =1,size(spp_var_list)
+         if  ( (spp_var_list(k) .EQ. 'XXX') .or. (spp_prt_list(k) .LE. 0.) ) then
+            cycle
+         else
+             n_var_spp=n_var_spp+1
+             spp_var_list( n_var_spp) = spp_var_list(k)  ! 
+             spp_prt_list( n_var_spp) = spp_prt_list(k) 
+         endif
+     enddo 
+     IF (n_var_spp > 0 ) THEN
+       do_spp=.true.
+     ENDIF
+     if (n_var_spp > max_n_var_spp) then 
+           print*, 'ERROR: SPP physics perturbation requested for too many parameters', & 
+                    'increase max_n_var_spp'
+           iret = 10 
+           return
+     endif
+             
+     if (me==0) print*, & 
+         'SPP physics perturbations will be applied to selected paramaters'
+        do k =1,n_var_spp
+            select case (spp_var_list(k))
+            case('pbl','mp','rad') 
+                if (me==0) print*, 'SPP physics perturbation will be applied to ', spp_var_list(k)
+            case default
+               print*, 'ERROR: SPP physics perturbation requested for new parameter - will need to be coded in spp_apply_pert', spp_var_list(k)
+               iret = 10 
+               return
+            end select 
+        enddo
+
+
 !
 !  All checks are successful.
 !
@@ -320,6 +381,8 @@ module compns_stochy_mod
          print *, ' do_skeb : ', do_skeb
          print *, ' lndp_type : ', lndp_type
          if (lndp_type .NE. 0) print *, ' n_var_lndp : ', n_var_lndp
+         print *, ' do_spp  : ', do_spp 
+         print *, ' n_var_spp : ', n_var_spp
       endif
       iret = 0
 !
