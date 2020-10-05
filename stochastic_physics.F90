@@ -19,7 +19,7 @@ contains
 !allocates and polulates the necessary arrays
 
 subroutine init_stochastic_physics(levs, blksz, dtp, input_nml_file_in, fn_nml, nlunit, &
-    do_sppt_in, do_shum_in, do_skeb_in, lndp_type_in, n_var_lndp_in, spp_type_in, n_var_spp_in, use_zmtnblck_out, skeb_npass_out,    &
+    do_sppt_in, do_shum_in, do_skeb_in, lndp_type_in, n_var_lndp_in, n_var_spp_in, use_zmtnblck_out, skeb_npass_out,    &
     lndp_var_list_out, lndp_prt_list_out, spp_var_list_out, spp_prt_list_out, do_spp_in, &
     ak, bk, nthreads, mpiroot, mpicomm, iret) 
 !\callgraph
@@ -44,7 +44,7 @@ character(len=*),         intent(in)    :: input_nml_file_in(:)
 character(len=*),         intent(in)    :: fn_nml
 logical,                  intent(in)    :: do_sppt_in, do_shum_in, do_skeb_in, do_spp_in
 integer,                  intent(in)    :: lndp_type_in, n_var_lndp_in
-integer,                  intent(in)    :: spp_type_in, n_var_spp_in
+integer,                  intent(in)    :: n_var_spp_in
 real(kind=kind_dbl_prec), intent(in)    :: ak(:), bk(:) 
 logical,                  intent(out)   :: use_zmtnblck_out
 integer,                  intent(out)   :: skeb_npass_out
@@ -104,11 +104,6 @@ else if (lndp_type_in /= lndp_type) then
 else if (n_var_lndp_in /=  n_var_lndp) then
    write(0,'(*(a))') 'Logic error in stochastic_physics_init: incompatible', &
                    & ' namelist settings n_var_lndp in physics nml, and lndp_* in nam_sfcperts'
-   iret = 20 
-   return
-else if (spp_type_in.neqv.spp_type) then
-   write(0,'(*(a))') 'Logic error in stochastic_physics_init: incompatible', &
-                   & ' namelist settings spp_type in physics and nam_sfcperts'
    iret = 20 
    return
 else if (n_var_spp_in .ne. n_var_spp) then

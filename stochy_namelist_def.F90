@@ -41,7 +41,6 @@
       real(kind=kind_dbl_prec), dimension(5) :: spp_lscale,spp_tau,spp_cutoff
       integer n_var_spp
       integer(8),dimension(5) ::iseed_spp
-      integer spp_type
       character(len=3), dimension(max_n_var_spp)         ::  spp_var_list
       real(kind=kind_dbl_prec), dimension(max_n_var_spp) ::  spp_prt_list
 
