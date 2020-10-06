@@ -65,7 +65,7 @@ module compns_stochy_mod
       lndp_tau,lndp_lscale 
 !     For SPP physics parameterization perterbations
       namelist /nam_spperts/spp_var_list, spp_prt_list, iseed_spp, & 
-      spp_tau,spp_lscale,spp_sigtop1, spp_sigtop2
+      spp_tau,spp_lscale,spp_sigtop1, spp_sigtop2,spp_stddev_cutoff 
 
       rerth  =6.3712e+6      ! radius of earth (m)
       tol=0.01  ! tolerance for calculations
@@ -144,6 +144,7 @@ module compns_stochy_mod
 ! For SPP perturbations
       spp_lscale  = -999.       ! length scales
       spp_tau     = -999.       ! time scales
+      spp_stddev_cutoff = 0     ! cutoff/limit for std-dev (zero==no limit applied)
       iseed_spp   = 0           ! random seeds (if 0 use system clock)
 
 #ifdef INTERNAL_FILE_NML
@@ -173,6 +174,7 @@ module compns_stochy_mod
       print*,'skeb=',skeb
       print*,'spp_lscale=',spp_lscale
       print*,'spp_tau=',spp_tau
+      print*,'spp_stddev_cutoff=',spp_stddev_cutoff 
       endif
 
 ! PJP stochastic physics additions

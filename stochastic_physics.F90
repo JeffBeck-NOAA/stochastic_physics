@@ -260,7 +260,7 @@ use get_stochy_pattern_mod,only : get_random_pattern_fv3,get_random_pattern_fv3_
                                   get_random_pattern_fv3_sfc
 use stochy_resol_def , only : latg,lonf
 use stochy_namelist_def, only : do_shum,do_sppt,do_skeb,fhstoch,nssppt,nsshum,nsskeb,sppt_logit,    & 
-                                lndp_type, n_var_lndp, n_var_spp, do_spp
+                                lndp_type, n_var_lndp, n_var_spp, do_spp, spp_stddev_cutoff
 use mpi_wrapper, only: is_master
 use spectral_layout_mod,only:ompthreads
 implicit none
@@ -373,7 +373,9 @@ else
           DO blk=1,nblks
              len=blksz(blk)
              DO k=1,levs
-                spp_wts(blk,1:len,k,v)=tmp_wts(blk,1:len)*vfact_spp(k)
+                if (spp_stddev_cutoff(v).gt.0.0) then
+                spp_wts(blk,1:len,k,v)=MAX(MIN(tmp_wts(blk,1:len)*vfact_spp(k),spp_stddev_cutoff(v)),-1.0*spp_stddev_cutoff(v))
+                endif
              ENDDO
           ENDDO
        ENDDO

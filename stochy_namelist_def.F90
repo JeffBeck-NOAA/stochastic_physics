@@ -11,7 +11,7 @@
 
       public
       integer, parameter :: max_n_var_lndp = 6 ! must match value used in GFS_typedefs
-      integer, parameter :: max_n_var_spp = 6! must match value used in GFS_typedefs
+      integer, parameter :: max_n_var_spp = 6  ! must match value used in GFS_typedefs
       integer nssppt,nsshum,nsskeb,lon_s,lat_s,ntrunc
 
 ! pjp stochastic phyics
@@ -38,7 +38,7 @@
       character(len=3), dimension(max_n_var_lndp)         ::  lndp_var_list
       real(kind=kind_dbl_prec), dimension(max_n_var_lndp) ::  lndp_prt_list
 
-      real(kind=kind_dbl_prec), dimension(5) :: spp_lscale,spp_tau,spp_cutoff
+      real(kind=kind_dbl_prec), dimension(5) :: spp_lscale,spp_tau,spp_stddev_cutoff
       integer n_var_spp
       integer(8),dimension(5) ::iseed_spp
       character(len=3), dimension(max_n_var_spp)         ::  spp_var_list
