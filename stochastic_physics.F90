@@ -108,7 +108,7 @@ else if (n_var_lndp_in /=  n_var_lndp) then
    return
 else if (n_var_spp_in .ne. n_var_spp) then
    write(0,'(*(a))') 'Logic error in stochastic_physics_init: incompatible', &
-                   & ' namelist settings n_var_spp in physics nml, and spp_* in nam_sfcperts'
+                   & ' namelist settings n_var_spp in physics nml, and spp_* in nam_spperts'
    iret = 20 
    return
 else if (do_spp_in.neqv.do_spp) then

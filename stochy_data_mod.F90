@@ -126,7 +126,7 @@ module stochy_data_mod
    if (nskeb > 0) allocate(rpattern_skeb(nskeb))
    ! mg, sfc perts
    if (nlndp > 0) allocate(rpattern_sfc(nlndp))
-   if (nspp > 0) allocate(rpattern_sfc(nspp))
+   if (nspp > 0) allocate(rpattern_spp(nspp))
 
 !  if stochini is true, then read in pattern from a file
    if (is_master()) then
