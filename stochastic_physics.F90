@@ -375,6 +375,8 @@ else
              DO k=1,levs
                 if (spp_stddev_cutoff(v).gt.0.0) then
                 spp_wts(blk,1:len,k,v)=MAX(MIN(tmp_wts(blk,1:len)*vfact_spp(k),spp_stddev_cutoff(v)),-1.0*spp_stddev_cutoff(v))
+                else
+                spp_wts(blk,1:len,k,v)=tmp_wts(blk,1:len)*vfact_spp(k)
                 endif
              ENDDO
           ENDDO
