@@ -10,7 +10,8 @@ module get_stochy_pattern_mod
  use stochy_data_mod, only : gg_lats, gg_lons, inttyp, nskeb, nshum, nsppt, &
                              rad2deg, rnlat, rpattern_sfc, rpattern_skeb,   &
                              rpattern_shum, rpattern_sppt, skebu_save,      &
-                             skebv_save, skeb_vwts, skeb_vpts, wlon, nlndp
+                             skebv_save, skeb_vwts, skeb_vpts, wlon, nlndp  &
+                             , nspp, rpattern_spp
  use stochy_gg_def, only : coslat_a
  use stochy_patterngenerator_mod, only: random_pattern, ndimspec,           &
                                         patterngenerator_advance
@@ -62,6 +63,7 @@ subroutine get_random_pattern_fv3(rpattern,npatterns,&
  glolal = 0.
  do n=1,npatterns
     call patterngenerator_advance(rpattern(n),1,.false.)
+     if (is_master()) print *, 'Random pattern in get_random_pattern_fv3: min, max ',minval(rpattern(n)%spec_o), maxval(rpattern(n)%spec_o)
     call scalarspect_to_gaugrid(                       &
          rpattern(n)%spec_e,rpattern(n)%spec_o,wrk2d,&
          gis_stochy%ls_node,gis_stochy%ls_nodes,gis_stochy%max_ls_nodes,&
@@ -81,6 +83,7 @@ subroutine get_random_pattern_fv3(rpattern,npatterns,&
 
    call mp_reduce_sum(workg,lonf,latg)
    
+   if (is_master()) print *, 'workg after mp_reduce_sum in get_random_pattern_fv3: min, max ',minval(workg), maxval(workg)
 
 ! interpolate to cube grid
    allocate(rslmsk(lonf,latg))
@@ -93,6 +96,7 @@ subroutine get_random_pattern_fv3(rpattern,npatterns,&
                            pattern_1d(1:len),len,rslmsk,tlats,tlons)
       pattern_2d(blk,:)=pattern_1d(:)
       end associate
+     if (is_master()) print *, 'Random cube-grid pattern in get_random_pattern_fv3: min, max ',minval(pattern_2d(blk,:)), maxval(pattern_2d(blk,:))
    enddo
    deallocate(rslmsk)
    deallocate(workg)
@@ -394,7 +398,7 @@ subroutine dump_patterns(sfile)
     integer :: stochlun,k,n
     stochlun=99
     if (is_master()) then
-       if (nsppt > 0 .OR. nshum > 0 .OR. nskeb > 0 .OR. nlndp > 0 ) then
+       if (nsppt > 0 .OR. nshum > 0 .OR. nskeb > 0 .OR. nlndp > 0 .OR. nspp>0 ) then
           OPEN(stochlun,file=sfile,form='unformatted')
           print*,'open ',sfile,' for output'
        endif
@@ -421,6 +425,11 @@ subroutine dump_patterns(sfile)
        do k=1,n_var_lndp
           call write_pattern(rpattern_sfc(n),k,stochlun)
        enddo
+       enddo
+    endif
+    if (nspp > 0) then
+       do n=1,nspp
+       call write_pattern(rpattern_spp(n),1,stochlun)
        enddo
     endif
     close(stochlun)

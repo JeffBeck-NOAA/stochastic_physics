@@ -65,7 +65,7 @@ module compns_stochy_mod
       lndp_tau,lndp_lscale 
 !     For SPP physics parameterization perterbations
       namelist /nam_spperts/spp_var_list, spp_prt_list, iseed_spp, & 
-      spp_tau,spp_lscale,spp_sigtop1, spp_sigtop2,spp_stddev_cutoff 
+      spp_tau,spp_lscale,spp_sigtop1, spp_sigtop2,spp_stddev_cutoff
 
       rerth  =6.3712e+6      ! radius of earth (m)
       tol=0.01  ! tolerance for calculations
@@ -247,6 +247,7 @@ module compns_stochy_mod
            if (skeb(k).GT.0) l_min=min(skeb_lscale(k),l_min)
        enddo
        if (lndp_type.GT.0) l_min=min(lndp_lscale(1),l_min)
+       if (spp_prt_list(1).GT.0) l_min=min(spp_lscale(1),l_min)
        !ntrunc=1.5*circ/l_min
        ntrunc=circ/l_min
        if (me==0) print*,'ntrunc calculated from l_min',l_min,ntrunc
