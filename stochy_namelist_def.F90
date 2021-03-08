@@ -20,7 +20,7 @@
 
       real(kind=kind_dbl_prec) :: skeb_sigtop1,skeb_sigtop2,          &
                          sppt_sigtop1,sppt_sigtop2,shum_sigefold, &
-                         skeb_vdof, spp_sigtop1, spp_sigtop2
+                         skeb_vdof
       real(kind=kind_dbl_prec) fhstoch,skeb_diss_smooth,spptint,shumint,skebint,skebnorm
       real(kind=kind_dbl_prec), dimension(5) :: skeb,skeb_lscale,skeb_tau
       real(kind=kind_dbl_prec), dimension(5) :: sppt,sppt_lscale,sppt_tau
@@ -38,9 +38,11 @@
       character(len=3), dimension(max_n_var_lndp)         ::  lndp_var_list
       real(kind=kind_dbl_prec), dimension(max_n_var_lndp) ::  lndp_prt_list
 
-      real(kind=kind_dbl_prec), dimension(5) :: spp_lscale,spp_tau,spp_stddev_cutoff
+      real(kind=kind_dbl_prec), dimension(max_n_var_spp) :: spp_lscale    &
+     &                                        , spp_tau,spp_stddev_cutoff &
+     &                                        , spp_sigtop1, spp_sigtop2
       integer n_var_spp
-      integer(8),dimension(5) ::iseed_spp
+      integer(8),dimension(max_n_var_spp) ::iseed_spp
       character(len=3), dimension(max_n_var_spp)         ::  spp_var_list
       real(kind=kind_dbl_prec), dimension(max_n_var_spp) ::  spp_prt_list
 

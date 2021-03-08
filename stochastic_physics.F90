@@ -110,6 +110,7 @@ else if (n_var_lndp_in /=  n_var_lndp) then
 else if (n_var_spp_in .ne. n_var_spp) then
    write(0,'(*(a))') 'Logic error in stochastic_physics_init: incompatible', &
                    & ' namelist settings n_var_spp in physics nml, and spp_* in nam_spperts'
+   write(0,*) 'n_var_spp, n_var_spp_in', n_var_spp, n_var_spp_in
    iret = 20 
    return
 else if (do_spp_in.neqv.do_spp) then
@@ -210,9 +211,9 @@ endif
 if (do_spp) then
    allocate(vfact_spp(levs))
    do k=1,levs
-      if (sl(k) .lt. spp_sigtop1 .and. sl(k) .gt. spp_sigtop2) then
-         vfact_spp(k) = (sl(k)-spp_sigtop2)/(spp_sigtop1-spp_sigtop2)
-      else if (sl(k) .lt. spp_sigtop2) then
+      if (sl(k) .lt. spp_sigtop1(k) .and. sl(k) .gt. spp_sigtop2(k)) then
+         vfact_spp(k) = (sl(k)-spp_sigtop2(k))/(spp_sigtop1(k)-spp_sigtop2(k))
+      else if (sl(k) .lt. spp_sigtop2(k)) then
           vfact_spp(k) = 0.0
       else
           vfact_spp(k) = 1.0

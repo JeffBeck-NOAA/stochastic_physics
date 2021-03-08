@@ -117,8 +117,8 @@ module stochy_data_mod
    !  endif
    !enddo
    if (n_var_lndp>0) nlndp=1
-   if (n_var_spp>0) nspp=1
    if (is_master())  print *,' nlndp   = ', nlndp
+   if (n_var_spp>0) nspp=n_var_spp
    if (is_master())  print *,' nspp   = ', nspp
 
    if (nsppt > 0) allocate(rpattern_sppt(nsppt))
@@ -340,7 +340,7 @@ if (nlndp > 0) then
    endif ! nlndp > 0
 if (nspp > 0) then
        ones = 1.
-       call patterngenerator_init(spp_lscale(1:nspp),delt,spp_tau(1:nspp),ones(1:nspp),iseed_spp,rpattern_spp, &
+       call patterngenerator_init(spp_lscale(1:nspp),delt,spp_tau(1:nspp),ones(1:nspp),iseed_spp(1:nspp),rpattern_spp, &
               lonf,latg,jcap,gis_stochy%ls_node,nspp,n_var_spp,0,new_lscale)
        do n=1,nspp
           if (is_master()) print *, 'Initialize random pattern for PHYSP PERTS'
