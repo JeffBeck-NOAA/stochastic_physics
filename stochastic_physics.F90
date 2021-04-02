@@ -211,9 +211,9 @@ endif
 if (do_spp) then
    allocate(vfact_spp(levs))
    do k=1,levs
-      if (sl(k) .lt. spp_sigtop1(k) .and. sl(k) .gt. spp_sigtop2(k)) then
-         vfact_spp(k) = (sl(k)-spp_sigtop2(k))/(spp_sigtop1(k)-spp_sigtop2(k))
-      else if (sl(k) .lt. spp_sigtop2(k)) then
+      if (sl(k) .lt. spp_sigtop1(1) .and. sl(k) .gt. spp_sigtop2(1)) then
+         vfact_spp(k) = (sl(k)-spp_sigtop2(1))/(spp_sigtop1(1)-spp_sigtop2(1))
+      else if (sl(k) .lt. spp_sigtop2(1)) then
           vfact_spp(k) = 0.0
       else
           vfact_spp(k) = 1.0
@@ -371,7 +371,8 @@ else
     endif
     if ( n_var_spp .GE. 1 ) then
        DO v=1,n_var_spp
-          call get_random_pattern_fv3(rpattern_spp,n_var_spp,gis_stochy,xlat,xlon,blksz,nblks,maxlen,tmp_wts)
+          tmp_wts=0.0
+          call get_random_pattern_fv3(rpattern_spp(v),1,gis_stochy,xlat,xlon,blksz,nblks,maxlen,tmp_wts)
           DO blk=1,nblks
              len=blksz(blk)
              DO k=1,levs
