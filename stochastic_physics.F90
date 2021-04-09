@@ -262,7 +262,7 @@ use get_stochy_pattern_mod,only : get_random_pattern_fv3,get_random_pattern_fv3_
                                   get_random_pattern_fv3_sfc
 use stochy_resol_def , only : latg,lonf
 use stochy_namelist_def, only : do_shum,do_sppt,do_skeb,fhstoch,nssppt,nsshum,nsskeb,sppt_logit,    & 
-                                lndp_type, n_var_lndp, n_var_spp, do_spp, spp_stddev_cutoff
+                                lndp_type, n_var_lndp, n_var_spp, do_spp, spp_stddev_cutoff, spp_prt_list
 use mpi_wrapper, only: is_master
 use spectral_layout_mod,only:ompthreads
 implicit none
@@ -377,9 +377,9 @@ else
              len=blksz(blk)
              DO k=1,levs
                 if (spp_stddev_cutoff(v).gt.0.0) then
-                spp_wts(blk,1:len,k,v)=MAX(MIN(tmp_wts(blk,1:len)*vfact_spp(k),spp_stddev_cutoff(v)),-1.0*spp_stddev_cutoff(v))
+                spp_wts(blk,1:len,k,v)=MAX(MIN(tmp_wts(blk,1:len)*vfact_spp(k),spp_stddev_cutoff(v)),-1.0*spp_stddev_cutoff(v)) * spp_prt_list(v)
                 else
-                spp_wts(blk,1:len,k,v)=tmp_wts(blk,1:len)*vfact_spp(k)
+                spp_wts(blk,1:len,k,v)=tmp_wts(blk,1:len)*vfact_spp(k) * spp_prt_list(v)
                 endif
              ENDDO
           ENDDO
