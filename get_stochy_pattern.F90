@@ -423,7 +423,6 @@ subroutine write_stoch_restart_atm(sfile)
              write(0,*) 'error creating stochastic restart file'
              return
          end if
->>>>>>> d0e62eb2996b363862fd543fe9ec910bd75bf004
        endif
     endif
     if (nsppt > 0) then
