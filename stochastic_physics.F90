@@ -19,7 +19,6 @@ contains
 !>@details It reads the stochastic physics namelist (nam_stoch and nam_sfcperts)
 !allocates and polulates the necessary arrays
 
-=======
 subroutine init_stochastic_physics(levs, blksz, dtp, sppt_amp, input_nml_file_in, fn_nml, nlunit, &
     xlon,xlat, &
     do_sppt_in, do_shum_in, do_skeb_in, lndp_type_in, n_var_lndp_in, n_var_spp_in, use_zmtnblck_out, skeb_npass_out,    &
@@ -27,8 +26,8 @@ subroutine init_stochastic_physics(levs, blksz, dtp, sppt_amp, input_nml_file_in
     ak, bk, nthreads, mpiroot, mpicomm, iret) 
 !\callgraph
 !use stochy_internal_state_moa
-use stochy_data_mod, only : nshum,rpattern_shum,init_stochdata,rpattern_sppt,nsppt,rpattern_skeb,nskeb,gg_lats,gg_lons,&
-                            rad2deg,INTTYP,wlon,rnlat,gis_stochy,vfact_skeb,vfact_sppt,vfact_shum,skeb_vpts,skeb_vwts,sl,vfact_spp
+use stochy_data_mod, only : init_stochdata,gg_lats,gg_lons,nsppt, &
+                            rad2deg, INTTYP,wlon,rnlat,gis_stochy,vfact_skeb,vfact_sppt,vfact_shum,skeb_vpts,skeb_vwts,sl,vfact_spp
 use stochy_namelist_def
 use spectral_layout_mod,only:me,master,nodes,colrad_a,latg,lonf,skeblevs
 use mpi_wrapper, only : mpi_wrapper_initialize,mype,npes,is_master
@@ -332,18 +331,17 @@ end subroutine init_stochastic_physics_ocn
 !>@details It updates the AR(1) in spectral space
 !allocates and polulates the necessary arrays
 
-subroutine run_stochastic_physics(levs, kdt, phour, blksz, xlat, xlon, sppt_wts, shum_wts, skebu_wts,  & 
+subroutine run_stochastic_physics(levs, kdt, fhour, blksz, sppt_wts, shum_wts, skebu_wts,  & 
                                   skebv_wts, sfc_wts, spp_wts, nthreads)
 
 !\callgraph
 !use stochy_internal_state_mod
 use stochy_data_mod, only : nshum,rpattern_shum,rpattern_sppt,nsppt,rpattern_skeb,nskeb,&
-                            rad2deg,INTTYP,wlon,rnlat,gis_stochy,vfact_sppt,vfact_shum,vfact_skeb, & 
+                            gis_stochy,vfact_sppt,vfact_shum,vfact_skeb, & 
                             rpattern_sfc, nlndp, rpattern_spp, nspp, vfact_spp
 use get_stochy_pattern_mod,only : get_random_pattern_scalar,get_random_pattern_vector, & 
                                   get_random_pattern_sfc
-use stochy_resol_def , only : latg,lonf
-use stochy_namelist_def, only : do_shum,do_sppt,do_skeb,fhstoch,nssppt,nsshum,nsskeb,sppt_logit,    & 
+use stochy_namelist_def, only : do_shum,do_sppt,do_skeb,nssppt,nsshum,nsskeb,sppt_logit,    & 
                                 lndp_type, n_var_lndp, n_var_spp, do_spp, spp_stddev_cutoff, spp_prt_list
 use mpi_wrapper, only: is_master
 use spectral_layout_mod,only:me
@@ -448,7 +446,7 @@ endif
 if ( n_var_spp .GE. 1 ) then
    DO v=1,n_var_spp
       tmp_wts=0.0
-      call get_random_pattern_fv3(rpattern_spp(v),1,gis_stochy,xlat,xlon,blksz,nblks,maxlen,tmp_wts)
+      call get_random_pattern_scalar(rpattern_spp(v),1,gis_stochy,tmp_wts)
       DO blk=1,nblks
          len=blksz(blk)
          DO k=1,levs

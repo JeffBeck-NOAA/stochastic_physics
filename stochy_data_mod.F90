@@ -447,8 +447,12 @@ if (nspp > 0) then
           do k=1,n_var_spp
            nspinup = spinup_efolds*spp_tau(n)/delt
           if (stochini) then
-             call read_pattern(rpattern_spp(n),k,stochlun)
-             if (is_master()) print *, 'spp pattern read',n,k,minval(rpattern_spp(n)%spec_o(:,:,k)), maxval(rpattern_spp(n)%spec_o(:,:,k))
+               call read_pattern(rpattern_spp(n),jcapin,stochlun,k,n,varid1,varid2,.true.,ierr)
+               if (ierr .NE. 0) then
+                  write(0,*) 'error reading SPP pattern'
+                  iret = ierr
+                  return
+               end if
           else
                call getnoise(rpattern_spp(n),noise_e,noise_o)
                do nn=1,len_trie_ls
