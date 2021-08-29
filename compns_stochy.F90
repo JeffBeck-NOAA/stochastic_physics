@@ -361,10 +361,10 @@ module compns_stochy_mod
      endif
              
      if (me==0) print*, & 
-         'SPP physics perturbations will be applied to selected paramaters', n_var_spp
+         'SPP physics perturbations will be applied to selected parameters', n_var_spp
         do k =1,n_var_spp
             select case (spp_var_list(k))
-            case('pbl','sfc', 'mp','rad') 
+            case('pbl','sfc', 'mp','rad','gwd') 
                 if (me==0) print*, 'SPP physics perturbation will be applied to ', spp_var_list(k)
             case default
                print*, 'ERROR: SPP physics perturbation requested for new parameter - will need to be coded in spp_apply_pert', spp_var_list(k)
